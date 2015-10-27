@@ -254,7 +254,7 @@ public class Student_info extends Frame implements ActionListener {
 						initialize();
 				}
 				
-				String sql = "insert into stu_info values(?,?,?,?)";
+				String sql = "insert into stu_info values(?,?,?,?)";	//삽입
 				//Statement의 메소드를 이용해서 SQL문의 실행
 				PreparedStatement stat=conn.prepareStatement(sql);
 				stat.setInt(1, idnum);
