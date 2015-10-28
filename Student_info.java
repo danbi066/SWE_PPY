@@ -131,11 +131,11 @@ public class Student_info extends Frame implements ActionListener {
 	private void init() {
 		try {
 			 //JDBC 드라이버를 DriverManager에 등록
-			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			String url = "jdbc:mysql://localhost:3306/sw_db"; //데이터베이스 이름
 
 			//해당 Driver로 부터 Connection 객체 획득
-			conn = DriverManager.getConnection(url, "root", "z8403521");
+			conn = DriverManager.getConnection(url, "sinwoo", "8105");
 			//Connection 객체로 부터 Statement 객체 획득
 			stat = conn.createStatement();
 			initialize();
@@ -186,6 +186,9 @@ public class Student_info extends Frame implements ActionListener {
 				dep.setEditable(true);
 				tel.setEditable(true);
 				break;
+			case UPDATE:
+				stu_id.setEditable(true);
+				tel.setEditable(true);
 			case DELETE:
 				stu_id.setEditable(true);
 				break;
@@ -205,6 +208,11 @@ public class Student_info extends Frame implements ActionListener {
 				add.setEnabled(true);
 				setEditable(ADD);
 				cmd = ADD;
+				break;
+			case UPDATE:
+				update.setEnabled(true);
+				setEditable(UPDATE);
+				cmd = UPDATE;
 				break;
 			case DELETE:
 				delete.setEnabled(true);
@@ -262,6 +270,37 @@ public class Student_info extends Frame implements ActionListener {
 				stat.setString(3, vdep);
 				stat.setString(4, vtel);
 				stat.executeUpdate();
+				setEnable(NONE);
+				clear();
+				cmd = NONE;
+				initialize();
+			}
+		}
+		else if(c==update){
+			if(cmd != UPDATE)
+				setEnable(UPDATE);
+			else{
+				String vid = stu_id.getText().trim();
+				String vtel = tel.getText().trim();
+				if(vid == null || vtel == null || vid.length() == 0 || vtel.length() == 0)
+					return;
+				idnum = Integer.parseInt(vid);
+				
+				ResultSet rs2=stat.executeQuery("select ID from stu_info where ID="+idnum);
+				if(!rs2.next()) { 	
+						display.setText("존재하지 않는 사용자ID 입니다.");
+						
+						setEnable(NONE);
+						clear();
+						cmd = NONE;
+						initialize();
+						return;
+				}
+				stat.executeUpdate("update stu_info set phone_num='" + vtel + "'where ID='" + vid + "'");
+				rs2=stat.executeQuery("select ID from stu_info where ID="+idnum);
+				if(!rs2.next()) { 	
+					display.setText("정보갱신이 완료되었습니다.");
+				}
 				setEnable(NONE);
 				clear();
 				cmd = NONE;
