@@ -18,7 +18,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+<<<<<<< HEAD
 import java.sql.Statement;
+=======
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
+>>>>>>> db_testing
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,19 +37,32 @@ public class Student_info extends Frame implements ActionListener {
 	public static final int  DELETE = 2;
 	public static final int  UPDATE = 3;
 	public static final int  VIEW  = 4;
+<<<<<<< HEAD
+=======
+	public static final int  TOTAL  = 5;
+>>>>>>> db_testing
 	
 	Object[] title = {"학번","이름","학과(학부)","전화번호"};
 	
 	TextArea display;
 	TextField stu_id, name, dep, tel;
 	Label id_label, name_label, dep_label, tel_label;
+<<<<<<< HEAD
 	Button add, delete, update, view, cancel;
 	JTable table = null;
+=======
+	Button add, delete, update, view, cancel, total;
+	JTable table, list_table = null;
+>>>>>>> db_testing
 	JScrollPane scroll;
 	DefaultTableModel tablemodel;
 	
 	Connection conn;
 	Statement stat;
+<<<<<<< HEAD
+=======
+	ResultSet rs;
+>>>>>>> db_testing
 	int        cmd;
 	
 	public Student_info() {
@@ -101,6 +120,11 @@ public class Student_info extends Frame implements ActionListener {
 		display_panel.add(scroll);
 		
 		Panel bottom = new Panel();
+<<<<<<< HEAD
+=======
+		bottom.add(total = new Button("전체학생보기"));
+		total.addActionListener(this);
+>>>>>>> db_testing
 		bottom.add(add = new Button("등록"));
 		add.addActionListener(this);
 		bottom.add(update = new Button("갱신"));
@@ -135,7 +159,11 @@ public class Student_info extends Frame implements ActionListener {
 			String url = "jdbc:mysql://localhost:3306/sw_db"; //데이터베이스 이름
 
 			//해당 Driver로 부터 Connection 객체 획득
+<<<<<<< HEAD
 			conn = DriverManager.getConnection(url, "sinwoo", "8105");
+=======
+			conn = DriverManager.getConnection(url, "root", "z8403521");
+>>>>>>> db_testing
 			//Connection 객체로 부터 Statement 객체 획득
 			stat = conn.createStatement();
 			initialize();
@@ -195,14 +223,24 @@ public class Student_info extends Frame implements ActionListener {
 			case VIEW:
 				stu_id.setEditable(true);
 				break;
+<<<<<<< HEAD
 			case NONE:
+=======
+>>>>>>> db_testing
 		}	
 	}
 	
 	public void setEnable(int n) {
 		add.setEnabled(false);
+<<<<<<< HEAD
 		delete.setEnabled(false);
 		view.setEnabled(false);
+=======
+		update.setEnabled(false);
+		delete.setEnabled(false);
+		view.setEnabled(false);
+		total.setEnabled(false);
+>>>>>>> db_testing
 		switch(n) {
 			case ADD:
 				add.setEnabled(true);
@@ -226,6 +264,7 @@ public class Student_info extends Frame implements ActionListener {
 				break;
 			case NONE:
 				add.setEnabled(true);
+<<<<<<< HEAD
 				delete.setEnabled(true);
 				view.setEnabled(true);
 		}
@@ -233,6 +272,19 @@ public class Student_info extends Frame implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		ResultSet rs = null;
+=======
+				update.setEnabled(true);
+				delete.setEnabled(true);
+				view.setEnabled(true);
+			case TOTAL:
+				total.setEnabled(true);
+				cmd = TOTAL;
+				break;
+		}
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+>>>>>>> db_testing
 		int idnum = 0;
 		Component c = (Component) e.getSource();
 	try{
@@ -362,6 +414,10 @@ public class Student_info extends Frame implements ActionListener {
 				rs = stat.executeQuery("select * from stu_info where ID='"+ idnum + "'");
 				
 				if(rs.next()) {
+<<<<<<< HEAD
+=======
+					//tablemodel.setNumRows(0);
+>>>>>>> db_testing
 					tablemodel.setNumRows(0);
 					do {
 						String stu_id = rs.getString(1);
@@ -370,7 +426,12 @@ public class Student_info extends Frame implements ActionListener {
 						String stu_tel = rs.getString(4);
 					
 						Object rowData[] = {stu_id, stu_name, stu_dep, stu_tel};
+<<<<<<< HEAD
 						tablemodel.addRow(rowData);					
+=======
+						//tablemodel.addRow(rowData);
+						tablemodel.addRow(rowData);
+>>>>>>> db_testing
 					} while(rs.next());
 				}
 				else{
@@ -383,7 +444,10 @@ public class Student_info extends Frame implements ActionListener {
 				initialize();
 			}
 		}
+<<<<<<< HEAD
 		
+=======
+>>>>>>> db_testing
 		else if(c==cancel)
 		{
 			setEnable(NONE);
@@ -391,10 +455,40 @@ public class Student_info extends Frame implements ActionListener {
 			initialize();
 			cmd = NONE;
 		}
+<<<<<<< HEAD
+=======
+		else if(c==total)
+		{
+			//String sql = "select * from MEMBER order by UserID";
+			rs = stat.executeQuery("select * from stu_info order by ID");
+			
+			if(rs.next())
+			{
+				tablemodel.setNumRows(0);
+				do {
+					String stu_id = rs.getString(1);
+					String stu_name = rs.getString(2);
+					String stu_dep = rs.getString(3);
+					String stu_tel = rs.getString(4);
+
+					Object rowData[] = {stu_id, stu_name, stu_dep, stu_tel};
+					tablemodel.addRow(rowData);
+				} while(rs.next());
+			}
+			else{
+				display.setText("자료가 없습니다.");
+				tablemodel.setNumRows(0);
+			}
+		}
+>>>>>>> db_testing
 		
 	} catch(Exception ex) { }
 	
 	return;
+<<<<<<< HEAD
+=======
+	
+>>>>>>> db_testing
 	}
 	
 	
