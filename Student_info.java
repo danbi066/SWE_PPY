@@ -18,7 +18,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Vector;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,19 +33,21 @@ public class Student_info extends Frame implements ActionListener {
 	public static final int  DELETE = 2;
 	public static final int  UPDATE = 3;
 	public static final int  VIEW  = 4;
+	public static final int  TOTAL  = 5;
 	
 	Object[] title = {"학번","이름","학과(학부)","전화번호"};
 	
 	TextArea display;
 	TextField stu_id, name, dep, tel;
 	Label id_label, name_label, dep_label, tel_label;
-	Button add, delete, update, view, cancel;
-	JTable table = null;
+	Button add, delete, update, view, cancel, total;
+	JTable table, list_table = null;
 	JScrollPane scroll;
 	DefaultTableModel tablemodel;
 	
 	Connection conn;
 	Statement stat;
+	ResultSet rs;
 	int        cmd;
 	
 	public Student_info() {
@@ -54,7 +58,7 @@ public class Student_info extends Frame implements ActionListener {
 		display_panel.setLayout(new GridLayout(1,1));
 		display = new TextArea();
 		display.setEditable(false);
-		display.setPreferredSize(new Dimension(700,30));
+		display.setPreferredSize(new Dimension(700,40));
 		
 		Panel stu_info = new Panel();	//모든 패널들을 포함하여 학생의 정보를 나타낼 stu_info를 선언하여 각 패널 add
 		stu_info.setLayout(new GridLayout(7,1));
@@ -101,6 +105,8 @@ public class Student_info extends Frame implements ActionListener {
 		display_panel.add(scroll);
 		
 		Panel bottom = new Panel();
+		bottom.add(total = new Button("전체학생보기"));
+		total.addActionListener(this);
 		bottom.add(add = new Button("등록"));
 		add.addActionListener(this);
 		bottom.add(update = new Button("갱신"));
@@ -111,6 +117,7 @@ public class Student_info extends Frame implements ActionListener {
 		view.addActionListener(this);
 		bottom.add(cancel = new Button("취소"));
 		cancel.addActionListener(this);
+		bottom.add(display);
 		
 		addWindowListener(new WindowAdapter() { //상태표시줄의 'X'버튼 누르면 창 닫히게 설정
 			public void windowClosing(WindowEvent e) {
@@ -195,14 +202,15 @@ public class Student_info extends Frame implements ActionListener {
 			case VIEW:
 				stu_id.setEditable(true);
 				break;
-			case NONE:
 		}	
 	}
 	
 	public void setEnable(int n) {
 		add.setEnabled(false);
+		update.setEnabled(false);
 		delete.setEnabled(false);
 		view.setEnabled(false);
+		total.setEnabled(false);
 		switch(n) {
 			case ADD:
 				add.setEnabled(true);
@@ -226,13 +234,17 @@ public class Student_info extends Frame implements ActionListener {
 				break;
 			case NONE:
 				add.setEnabled(true);
+				update.setEnabled(true);
 				delete.setEnabled(true);
 				view.setEnabled(true);
+			case TOTAL:
+				total.setEnabled(true);
+				cmd = TOTAL;
+				break;
 		}
 	}
-
+	
 	public void actionPerformed(ActionEvent e) {
-		ResultSet rs = null;
 		int idnum = 0;
 		Component c = (Component) e.getSource();
 	try{
@@ -362,6 +374,7 @@ public class Student_info extends Frame implements ActionListener {
 				rs = stat.executeQuery("select * from stu_info where ID='"+ idnum + "'");
 				
 				if(rs.next()) {
+					//tablemodel.setNumRows(0);
 					tablemodel.setNumRows(0);
 					do {
 						String stu_id = rs.getString(1);
@@ -370,7 +383,8 @@ public class Student_info extends Frame implements ActionListener {
 						String stu_tel = rs.getString(4);
 					
 						Object rowData[] = {stu_id, stu_name, stu_dep, stu_tel};
-						tablemodel.addRow(rowData);					
+						//tablemodel.addRow(rowData);
+						tablemodel.addRow(rowData);
 					} while(rs.next());
 				}
 				else{
@@ -383,7 +397,6 @@ public class Student_info extends Frame implements ActionListener {
 				initialize();
 			}
 		}
-		
 		else if(c==cancel)
 		{
 			setEnable(NONE);
@@ -391,10 +404,34 @@ public class Student_info extends Frame implements ActionListener {
 			initialize();
 			cmd = NONE;
 		}
+		else if(c==total)
+		{
+			//String sql = "select * from MEMBER order by UserID";
+			rs = stat.executeQuery("select * from stu_info order by ID");
+			
+			if(rs.next())
+			{
+				tablemodel.setNumRows(0);
+				do {
+					String stu_id = rs.getString(1);
+					String stu_name = rs.getString(2);
+					String stu_dep = rs.getString(3);
+					String stu_tel = rs.getString(4);
+
+					Object rowData[] = {stu_id, stu_name, stu_dep, stu_tel};
+					tablemodel.addRow(rowData);
+				} while(rs.next());
+			}
+			else{
+				display.setText("자료가 없습니다.");
+				tablemodel.setNumRows(0);
+			}
+		}
 		
 	} catch(Exception ex) { }
 	
 	return;
+	
 	}
 	
 	
